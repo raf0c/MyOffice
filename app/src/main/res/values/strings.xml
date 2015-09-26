@@ -1,0 +1,40 @@
+<resources>
+    <string name="app_name">MyOffice</string>
+    <string name="title_activity_main">Map</string>
+    <string name="openDrawer">Open navigation drawer</string>
+    <string name="closeDrawer">Close navigation drawer</string>
+    <string name="places">Enter Office Here</string>
+    <!-- GEOFENCING -->
+    <!-- Buttons strings -->
+    <string name="add_geofences">Add geofences</string>
+    <string name="remove_geofences">Remove geofences</string>
+
+    <string name="geofences_added">Geofences added</string>
+    <string name="geofences_removed">Geofences removed</string>
+
+    <!-- Error strings -->
+    <string name="not_connected">GoogleApiClient no yet connected. Try again.</string>
+    <string name="geofence_not_available">GF service not available now</string>
+    <string name="geofence_too_many_geofences">App registered many gf</string>
+    <string name="geofence_too_many_pending_intents">Lots of PendingIntents to addGeofences()</string>
+    <string name="unknown_geofence_error">GF is not available now</string>
+    <string name="geofence_transition_invalid_type">invalid transition type %1$d</string>
+
+    <!-- Transition type strings -->
+    <string name="geofence_transition_entered">Entered</string>
+    <string name="geofence_transition_exited">Exited</string>
+    <string name="unknown_geofence_transition">Unknown Transition</string>
+
+    <string name="geofence_transition_notification_text">Return to app</string>
+
+
+
+    <string-array name="drawer_search">
+        <item>My Office</item>
+        <item>My History</item>
+    </string-array>
+    <array name="drawer_icons">
+        <item>@drawable/my_office</item>
+        <item>@drawable/my_history</item>
+    </array>
+</resources>
