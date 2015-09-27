@@ -1,10 +1,5 @@
 package com.example.raf0c.myoffice.constants;
 
-import com.example.raf0c.myoffice.R;
-import com.example.raf0c.myoffice.utils.GeofenceErrorMessages;
-import com.google.android.gms.maps.model.LatLng;
-
-import java.util.HashMap;
 
 /**
  * Created by raf0c on 25/09/15.
@@ -32,7 +27,7 @@ public class Constants {
      * For this sample, geofences expire after twelve hours.
      */
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
-    public static final float GEOFENCE_RADIUS_IN_METERS = 40; //250 meters stablished on the email provided
+    public static final float GEOFENCE_RADIUS_IN_METERS = 250; //250 meters stablished on the email provided
 
 
 

@@ -136,7 +136,7 @@ public class NavigationDrawerFragment extends Fragment {
                         mDrawerLayout.closeDrawers();
                         break;
                     case 1:
-                        //fragment = new SavedLocationsFragment();
+                        fragment = VisitsFragment.newInstance(getActivity().getApplicationContext());
                         mDrawerLayout.closeDrawers();
                         break;
                 }

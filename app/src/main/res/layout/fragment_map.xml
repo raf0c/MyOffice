@@ -3,36 +3,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android">
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-            <Button
-                android:id="@+id/add_geofences_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/add_geofences" />
-            <Button
-                android:id="@+id/remove_geofences_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/remove_geofences" />
-            <com.example.raf0c.myoffice.views.CustomAutoComplete
-                android:id="@+id/search_place"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/places"/>
-            <com.google.android.gms.maps.MapView
-                xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:map="http://schemas.android.com/apk/res-auto"
-                android:id="@+id/mapView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:clickable="true"
-                map:uiCompass="true"
-                map:zOrderOnTop="true"
-                map:uiZoomControls="true"
-                android:background="#00000000" />
-        </LinearLayout>
+    <com.example.raf0c.myoffice.views.CustomAutoComplete
+        android:id="@+id/search_place"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/places"/>
+    <Button
+        android:id="@+id/remove_geofences_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/remove_geofences" />
+    <com.google.android.gms.maps.MapView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/mapView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clickable="true"
+        map:uiCompass="true"
+        map:zOrderOnTop="true"
+        map:uiZoomControls="true"
+        android:background="#00000000" />
+
 </LinearLayout>
 

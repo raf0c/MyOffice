@@ -27,13 +27,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.raf0c.myoffice.R;
-import com.example.raf0c.myoffice.adapters.AutoCompleteAdapter;
 import com.example.raf0c.myoffice.constants.Constants;
 import com.example.raf0c.myoffice.controller.ApplicationController;
-import com.example.raf0c.myoffice.model.AutoCompleteText;
+import com.example.raf0c.myoffice.model.Visits;
 import com.example.raf0c.myoffice.services.GeofenceTransitionsIntentService;
+import com.example.raf0c.myoffice.sql.VisitsDataSource;
 import com.example.raf0c.myoffice.utils.GeofenceErrorMessages;
-import com.example.raf0c.myoffice.utils.GpsCoordinatesHelper;
 import com.example.raf0c.myoffice.utils.PlaceJSONParser;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -53,8 +52,6 @@ import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
@@ -78,8 +75,6 @@ public class MainFragment extends Fragment
     public  double mLongitude;
     protected static final String TAG = "creating-and-monitoring-geofences";
     public AutoCompleteTextView autoPlaces;
-
-
 
     /**
      * Provides the entry point to Google Play services.
@@ -106,9 +101,10 @@ public class MainFragment extends Fragment
      */
     private SharedPreferences mSharedPreferences;
 
-    // Buttons for kicking off the process of adding or removing geofences.
-    private Button mAddGeofencesButton;
+    // Button for removing geofences.
     private Button mRemoveGeofencesButton;
+
+    public  VisitsDataSource datasource;
 
 
     public MainFragment() {
@@ -130,6 +126,10 @@ public class MainFragment extends Fragment
         mapView.onResume(); //without this, map showed but was empty
         autoPlaces = (AutoCompleteTextView) myLayout.findViewById(R.id.search_place);
         autoPlaces.setThreshold(1);
+
+        datasource = new VisitsDataSource(getActivity().getApplicationContext());
+        datasource.open();
+
 
         autoPlaces.addTextChangedListener(new TextWatcher() {
 
@@ -170,20 +170,12 @@ public class MainFragment extends Fragment
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mapView.getMap();
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        // Get the UI widgets.
-        mAddGeofencesButton = (Button) myLayout.findViewById(R.id.add_geofences_button);
         mRemoveGeofencesButton = (Button) myLayout.findViewById(R.id.remove_geofences_button);
 
-        mAddGeofencesButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                addGeofencesButtonHandler(v);
-            }
-        });
         mRemoveGeofencesButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                removeGeofencesButtonHandler(v);
+                removeGeofence(v);
             }
         });
         // Empty list for storing geofences.
@@ -293,11 +285,14 @@ public class MainFragment extends Fragment
 
                             MarkerOptions options = new MarkerOptions();
                             options.position(point);
-                            options.title("Position");
+                            options.title("Office");
                             options.snippet("Latitude:"+latitude+",Longitude:"+longitude);
+                            Circle circle = mMap.addCircle(new CircleOptions().center(point).radius(250).strokeColor(Color.RED));
 
                             // Adding the marker in the Google Map
                             mMap.addMarker(options);
+
+                            addGeofence(getView());
 
 
                         }
@@ -334,17 +329,17 @@ public class MainFragment extends Fragment
     }
 
     @Override
+    public void onResume() {
+        datasource.open();
+        super.onResume();
+    }
+    @Override
     public void onStop() {
         super.onStop();
+        datasource.close();
         mGoogleApiClient.disconnect();
     }
 
-
-    private void setUpMap() {
-        LatLng latLng = new LatLng(mLatitude, mLongitude);
-        mMap.addMarker(new MarkerOptions().position(latLng).title("My Office"));
-        Circle circle = mMap.addCircle(new CircleOptions().center(latLng).radius(20).strokeColor(Color.RED));
-    }
 
     @SuppressLint("LongLogTag")
     @Override
@@ -376,8 +371,7 @@ public class MainFragment extends Fragment
             editor.putBoolean(Constants.GEOFENCES_ADDED_KEY, mGeofencesAdded);
             editor.commit();
 
-            // Update the UI. Adding geofences enables the Remove Geofences button, and removing
-            // geofences enables the Add Geofences button.
+            // Update the UI. Adding geofences enables the Remove Geofences button
             setButtonsEnabledState();
 
             Toast.makeText(getActivity(), getString(mGeofencesAdded ? R.string.geofences_added : R.string.geofences_removed), Toast.LENGTH_SHORT).show();
@@ -413,7 +407,7 @@ public class MainFragment extends Fragment
      * Adds geofences, which sets alerts to be notified when the device enters or exits one of the
      * specified geofences. Handles the success or failure results returned by addGeofences().
      */
-    public void addGeofencesButtonHandler(View view) {
+    public void addGeofence(View view) {
         if (!mGoogleApiClient.isConnected()) {
             Toast.makeText(getActivity(), getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
@@ -439,7 +433,7 @@ public class MainFragment extends Fragment
      * Removes geofences, which stops further notifications when the device enters or exits
      * previously registered geofences.
      */
-    public void removeGeofencesButtonHandler(View view) {
+    public void removeGeofence(View view) {
         if (!mGoogleApiClient.isConnected()) {
             Toast.makeText(getActivity(), getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
             return;
@@ -477,6 +471,9 @@ public class MainFragment extends Fragment
         Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
+        Bundle extras = new Bundle();
+
+        intent.putExtras(extras);
         return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
@@ -514,10 +511,8 @@ public class MainFragment extends Fragment
      */
     private void setButtonsEnabledState() {
         if (mGeofencesAdded) {
-            mAddGeofencesButton.setEnabled(false);
             mRemoveGeofencesButton.setEnabled(true);
         } else {
-            mAddGeofencesButton.setEnabled(true);
             mRemoveGeofencesButton.setEnabled(false);
         }
     }
