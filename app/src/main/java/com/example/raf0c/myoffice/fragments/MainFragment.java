@@ -253,7 +253,6 @@ public class MainFragment extends Fragment
             googlePlacesUrl.append("reference=" + URLEncoder.encode(ref, "utf-8"));
             googlePlacesUrl.append("&sensor=true");
             googlePlacesUrl.append("&key=" + GeofenceErrorMessages.getGoogleMapsBrowserKey(getActivity()));
-
             request = new JsonObjectRequest(googlePlacesUrl.toString(), null,
                     new Response.Listener<JSONObject>() {
                         @Override
@@ -273,6 +272,9 @@ public class MainFragment extends Fragment
                             // Getting longitude from the parsed data
                             double longitude = Double.parseDouble(hm.get("lng"));
                             mLongitude = longitude;
+
+                            String address = hm.get("formatted_address");
+                            mCityName = address;
 
                             LatLng point = new LatLng(latitude, longitude);
 
@@ -471,9 +473,11 @@ public class MainFragment extends Fragment
         Intent intent = new Intent(getActivity(), GeofenceTransitionsIntentService.class);
         // We use FLAG_UPDATE_CURRENT so that we get the same pending intent back when calling
         // addGeofences() and removeGeofences().
-        Bundle extras = new Bundle();
+        intent.putExtra(Constants.OFFICE_TAG, mCityName);
+        intent.putExtra(Constants.LAT_TAG, mLatitude);
+        intent.putExtra(Constants.LONG_TAG, mLongitude);
 
-        intent.putExtras(extras);
+
         return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

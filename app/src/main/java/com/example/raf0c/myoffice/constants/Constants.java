@@ -29,6 +29,8 @@ public class Constants {
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS = GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
     public static final float GEOFENCE_RADIUS_IN_METERS = 250; //250 meters stablished on the email provided
 
-
+    public static final String OFFICE_TAG = "OFFICE";
+    public static final String LAT_TAG = "LAT";
+    public static final String LONG_TAG = "LONG";
 
 }

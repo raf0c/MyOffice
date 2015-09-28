@@ -5,6 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.example.raf0c.myoffice.model.Visits;
 
@@ -80,5 +82,7 @@ public class VisitsDataSource {
         Visits visit = new Visits(cursor.getLong(0),cursor.getString(1),cursor.getLong(2),cursor.getLong(3),cursor.getLong(4));
         return visit;
     }
+
+
 }
 

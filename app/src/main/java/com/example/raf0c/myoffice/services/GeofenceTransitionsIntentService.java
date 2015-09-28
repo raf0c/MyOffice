@@ -15,6 +15,7 @@ import android.util.Log;
 
 import com.example.raf0c.myoffice.MainActivity;
 import com.example.raf0c.myoffice.R;
+import com.example.raf0c.myoffice.constants.Constants;
 import com.example.raf0c.myoffice.fragments.MainFragment;
 import com.example.raf0c.myoffice.utils.GeofenceErrorMessages;
 import com.google.android.gms.location.Geofence;
@@ -57,13 +58,19 @@ public class GeofenceTransitionsIntentService extends IntentService {
             Log.e(TAG, errorMessage);
             return;
         }
+
+        String city = intent.getStringExtra(Constants.OFFICE_TAG);
+        double latitud = intent.getDoubleExtra(Constants.LAT_TAG,0);
+        double longitud = intent.getDoubleExtra(Constants.LONG_TAG,0);
+
+
         // Get the transition type.
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
 
         // Test that the reported transition was of interest.
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER || geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
 
-            
+
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
