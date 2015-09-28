@@ -7,11 +7,15 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
 import com.example.raf0c.myoffice.model.Visits;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by raf0c on 27/09/15.
@@ -39,6 +43,9 @@ public class VisitsDataSource {
     public Visits insertVisit(String office, Long entry, Long exit, Long duration) {
         ContentValues values = new ContentValues();
         values.put(MySQLiteHelper.COLUMN_OFFICE, office);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/M/yyyy", Locale.US);
+        String date = sdf.format(entry);
+        Log.e("ENTRY",date);
         values.put(MySQLiteHelper.COLUMN_ENTRY,entry);
         values.put(MySQLiteHelper.COLUMN_EXIT,exit);
         values.put(MySQLiteHelper.COLUMN_DURATION, duration);
@@ -59,6 +66,16 @@ public class VisitsDataSource {
         database.delete(MySQLiteHelper.TABLE_VISITS, MySQLiteHelper.COLUMN_ID + " = " + id, null);
     }
 
+    public void updateVisit(Date date){
+        ContentValues newValues = new ContentValues();
+        Cursor cursor = database.query(MySQLiteHelper.TABLE_VISITS, allColumns, null, null, null, null, null);
+        cursor.moveToLast();
+        long duration = date.getTime() - cursor.getLong(3);
+        newValues.put(MySQLiteHelper.COLUMN_EXIT, date.getTime());
+        newValues.put(MySQLiteHelper.COLUMN_DURATION, duration);
+        database.update(MySQLiteHelper.TABLE_VISITS, newValues, "_id=" + cursor.getLong(0), null);
+    }
+
     public List<Visits> getAllVisits() {
         List<Visits> visits = new ArrayList<>();
 
@@ -72,7 +89,6 @@ public class VisitsDataSource {
             cursor.moveToNext();
 
         }
-
         // make sure to close the cursor
         cursor.close();
         return visits;

@@ -12,21 +12,34 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.text.TextUtils;
 import android.util.Log;
+import android.widget.ListView;
 
 import com.example.raf0c.myoffice.MainActivity;
 import com.example.raf0c.myoffice.R;
+import com.example.raf0c.myoffice.adapters.VisitsAdapter;
 import com.example.raf0c.myoffice.constants.Constants;
 import com.example.raf0c.myoffice.fragments.MainFragment;
+import com.example.raf0c.myoffice.interfaces.MyLocationListener;
+import com.example.raf0c.myoffice.model.Visits;
+import com.example.raf0c.myoffice.sql.VisitsDataSource;
 import com.example.raf0c.myoffice.utils.GeofenceErrorMessages;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
+import com.google.android.gms.location.LocationListener;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
 public class GeofenceTransitionsIntentService extends IntentService {
     protected static final String TAG = "geofence-transitions-service";
+
+    public  boolean exited = false;
+    public  boolean entry = false;
+    public ListView mVisitsListView;
+
 
     /**
      * This constructor is required, and calls the super IntentService(String)
@@ -52,17 +65,13 @@ public class GeofenceTransitionsIntentService extends IntentService {
     @SuppressLint("LongLogTag")
     @Override
     protected void onHandleIntent(Intent intent) {
+
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceErrorMessages.getErrorString(this, geofencingEvent.getErrorCode());
             Log.e(TAG, errorMessage);
             return;
         }
-
-        String city = intent.getStringExtra(Constants.OFFICE_TAG);
-        double latitud = intent.getDoubleExtra(Constants.LAT_TAG,0);
-        double longitud = intent.getDoubleExtra(Constants.LONG_TAG,0);
-
 
         // Get the transition type.
         int geofenceTransition = geofencingEvent.getGeofenceTransition();
@@ -71,6 +80,42 @@ public class GeofenceTransitionsIntentService extends IntentService {
         if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER || geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
 
 
+            String city = intent.getStringExtra(Constants.OFFICE_TAG);
+            double latitud = intent.getDoubleExtra(Constants.LAT_TAG, 0);
+            double longitud = intent.getDoubleExtra(Constants.LONG_TAG, 0);
+
+            // Test that the reported transition was of interest.
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_ENTER) {
+
+                VisitsDataSource datasource  = new VisitsDataSource(getApplicationContext());
+                datasource.open();
+
+                Visits visits = null;
+                List<Visits>  list = new ArrayList<>();
+                Calendar calendar = Calendar.getInstance();
+                Date date =  calendar.getTime();
+
+                visits = datasource.insertVisit(city,date.getTime(),null,null);
+                VisitsAdapter mAdapter = new VisitsAdapter(getApplicationContext(),R.layout.item_visits,list);
+
+                mAdapter.add(visits);
+                mAdapter.notifyDataSetChanged();
+                datasource.close();
+            }
+            if (geofenceTransition == Geofence.GEOFENCE_TRANSITION_EXIT) {
+                Calendar calendar = Calendar.getInstance();
+                Date date =  calendar.getTime();
+
+                VisitsDataSource datasource  = new VisitsDataSource(getApplicationContext());
+                datasource.open();
+
+                List<Visits>  list = new ArrayList<>();
+                VisitsAdapter mAdapter = new VisitsAdapter(getApplicationContext(),R.layout.item_visits,list);
+
+                datasource.updateVisit(date);
+                mAdapter.notifyDataSetChanged();
+                datasource.close();
+            }
             // Get the geofences that were triggered. A single event can trigger multiple geofences.
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 

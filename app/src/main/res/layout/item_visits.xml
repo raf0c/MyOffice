@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:paddingTop="8dp"
     android:paddingBottom="8dp"
     android:layout_height="wrap_content"
-    android:background="@color/primary_light">
+    android:background="@color/primary_light"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_dark_material_dark"
         android:paddingTop="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/item_office"
         android:id="@+id/tv_office" />
 
@@ -21,31 +22,26 @@
         android:layout_height="wrap_content"
         android:textColor="@color/primary_dark_material_dark"
         android:paddingTop="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/item_duration"
-        android:id="@+id/tv_duration"
-        android:layout_below="@id/tv_office"
-        android:layout_alignParentEnd="true"/>
+        android:id="@+id/tv_duration"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_dark_material_dark"
         android:paddingTop="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/item_entry"
-        android:id="@+id/tv_entry"
-        android:layout_below="@id/tv_duration"/>
+        android:id="@+id/tv_entry"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/primary_dark_material_dark"
         android:paddingTop="4dp"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceSmall"
         android:text="@string/item_exit"
-        android:id="@+id/tv_exit"
-        android:layout_alignParentEnd="true"
-        android:layout_below="@id/tv_duration"/>
+        android:id="@+id/tv_exit"/>
 
-</RelativeLayout>
+</LinearLayout>

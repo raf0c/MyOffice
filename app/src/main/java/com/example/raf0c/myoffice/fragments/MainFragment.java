@@ -29,6 +29,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.raf0c.myoffice.R;
 import com.example.raf0c.myoffice.constants.Constants;
 import com.example.raf0c.myoffice.controller.ApplicationController;
+import com.example.raf0c.myoffice.interfaces.MyLocationListener;
 import com.example.raf0c.myoffice.model.Visits;
 import com.example.raf0c.myoffice.services.GeofenceTransitionsIntentService;
 import com.example.raf0c.myoffice.sql.VisitsDataSource;
@@ -104,15 +105,17 @@ public class MainFragment extends Fragment
     // Button for removing geofences.
     private Button mRemoveGeofencesButton;
 
-    public  VisitsDataSource datasource;
+    public  static MyLocationListener myLocationListener;
+
 
 
     public MainFragment() {
     }
 
-    public static MainFragment newInstance(Context context) {
+    public static MainFragment newInstance(Context context, MyLocationListener mListener) {
         MainFragment fragment = new MainFragment();
         mContext = context;
+        myLocationListener = mListener;
         return fragment;
     }
 
@@ -127,8 +130,6 @@ public class MainFragment extends Fragment
         autoPlaces = (AutoCompleteTextView) myLayout.findViewById(R.id.search_place);
         autoPlaces.setThreshold(1);
 
-        datasource = new VisitsDataSource(getActivity().getApplicationContext());
-        datasource.open();
 
 
         autoPlaces.addTextChangedListener(new TextWatcher() {
@@ -332,13 +333,11 @@ public class MainFragment extends Fragment
 
     @Override
     public void onResume() {
-        datasource.open();
         super.onResume();
     }
     @Override
     public void onStop() {
         super.onStop();
-        datasource.close();
         mGoogleApiClient.disconnect();
     }
 
@@ -476,8 +475,6 @@ public class MainFragment extends Fragment
         intent.putExtra(Constants.OFFICE_TAG, mCityName);
         intent.putExtra(Constants.LAT_TAG, mLatitude);
         intent.putExtra(Constants.LONG_TAG, mLongitude);
-
-
         return PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 

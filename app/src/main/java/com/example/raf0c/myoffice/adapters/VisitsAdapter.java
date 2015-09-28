@@ -1,7 +1,10 @@
 package com.example.raf0c.myoffice.adapters;
 
 import android.app.Activity;
+import android.app.Application;
+import android.app.Service;
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +14,9 @@ import android.widget.TextView;
 import com.example.raf0c.myoffice.R;
 import com.example.raf0c.myoffice.model.Visits;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by raf0c on 27/09/15.
@@ -45,7 +50,7 @@ public class VisitsAdapter extends ArrayAdapter<Visits> {
 
         if(row == null)
         {
-            LayoutInflater inflater = ((Activity)mContext).getLayoutInflater();
+            LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Service.LAYOUT_INFLATER_SERVICE);
             row = inflater.inflate(mResourceId, parent, false);
 
             holder = new VisitsHolder();
@@ -61,11 +66,13 @@ public class VisitsAdapter extends ArrayAdapter<Visits> {
             holder = (VisitsHolder)row.getTag();
         }
 
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy MMM dd HH:mm:ss", Locale.US);
+
         Visits visit = mRecords.get(position);
         holder.tv_office.setText(visit.getOffice());
-        holder.tv_duration.setText(String.valueOf(visit.getDuration()));
-        holder.tv_entry.setText(String.valueOf(visit.getOffice()));
-        holder.tv_exit.setText(String.valueOf(visit.getOffice()));
+        holder.tv_duration.setText(sdf.format(visit.getDuration()));
+        holder.tv_entry.setText(sdf.format(visit.getEntry()));
+        holder.tv_exit.setText(sdf.format(visit.getExit()));
 
         return row;
     }
