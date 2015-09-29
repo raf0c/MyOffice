@@ -112,10 +112,9 @@ public class MainFragment extends Fragment
     public MainFragment() {
     }
 
-    public static MainFragment newInstance(Context context, MyLocationListener mListener) {
+    public static MainFragment newInstance(Context context) {
         MainFragment fragment = new MainFragment();
         mContext = context;
-        myLocationListener = mListener;
         return fragment;
     }
 

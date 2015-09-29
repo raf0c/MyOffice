@@ -15,8 +15,10 @@ import com.example.raf0c.myoffice.R;
 import com.example.raf0c.myoffice.model.Visits;
 
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by raf0c on 27/09/15.
@@ -69,13 +71,15 @@ public class VisitsAdapter extends ArrayAdapter<Visits> {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy MMM dd HH:mm:ss", Locale.US);
 
         Visits visit = mRecords.get(position);
-        holder.tv_office.setText(visit.getOffice());
-        holder.tv_duration.setText(sdf.format(visit.getDuration()));
-        holder.tv_entry.setText(sdf.format(visit.getEntry()));
-        holder.tv_exit.setText(sdf.format(visit.getExit()));
+        holder.tv_office.setText("Office: " + visit.getOffice());
+        long diffHours = visit.getDuration() / (60 * 60 * 1000);
+        long diffMinutes = visit.getDuration() / (60 * 1000) % 60;
+        long diffSeconds = visit.getDuration() / 1000 % 60;
+        holder.tv_duration.setText("Duration: " + diffHours + " Hours " + diffMinutes + " Minutes " + diffSeconds + " Seconds");
+        holder.tv_entry.setText("Entry: " + sdf.format(visit.getEntry()));
+        holder.tv_exit.setText("Exit: " + sdf.format(visit.getExit()));
 
         return row;
     }
-
 
 }

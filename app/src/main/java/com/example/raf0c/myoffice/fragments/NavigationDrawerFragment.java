@@ -133,7 +133,7 @@ public class NavigationDrawerFragment extends Fragment {
 
                 switch (position) {
                     case 0:
-                        fragment = new MainFragment();
+                        fragment = MainFragment.newInstance(getActivity().getApplicationContext());
                         mDrawerLayout.closeDrawers();
                         break;
                     case 1:

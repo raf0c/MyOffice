@@ -9,6 +9,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.example.raf0c.myoffice.constants.Constants;
 import com.example.raf0c.myoffice.model.Visits;
 
 import java.text.SimpleDateFormat;
@@ -62,7 +63,7 @@ public class VisitsDataSource {
 
     public void deleteVisit(Visits visits) {
         long id = visits.getId();
-        System.out.println("Visit deleted with id: " + id);
+        Log.i("DELETE","Visit deleted with id: " + id);
         database.delete(MySQLiteHelper.TABLE_VISITS, MySQLiteHelper.COLUMN_ID + " = " + id, null);
     }
 
@@ -70,10 +71,11 @@ public class VisitsDataSource {
         ContentValues newValues = new ContentValues();
         Cursor cursor = database.query(MySQLiteHelper.TABLE_VISITS, allColumns, null, null, null, null, null);
         cursor.moveToLast();
-        long duration = date.getTime() - cursor.getLong(3);
+        long duration = date.getTime() - cursor.getLong(2);
         newValues.put(MySQLiteHelper.COLUMN_EXIT, date.getTime());
         newValues.put(MySQLiteHelper.COLUMN_DURATION, duration);
         database.update(MySQLiteHelper.TABLE_VISITS, newValues, "_id=" + cursor.getLong(0), null);
+        cursor.close();
     }
 
     public List<Visits> getAllVisits() {
