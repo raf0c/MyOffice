@@ -24,13 +24,9 @@ import com.example.raf0c.myoffice.fragments.NavigationDrawerFragment;
 
 public class MainActivity extends AppCompatActivity {
 
-    private int mCurrentSelectedPosition = 0;
-    private boolean mFromSavedInstanceState;
     private static final String STATE_SELECTED_POSITION = "selected_navigation_drawer_position";
-    private Toolbar toolbar;
     static Fragment mCurrentFragment = new MainFragment();
     private NavigationDrawerFragment mNavigationDrawerFragment;
-    private MainFragment mainf = new MainFragment();
 
 
     @Override
@@ -85,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
+        int mCurrentSelectedPosition = 0;
         outState.putInt(STATE_SELECTED_POSITION, mCurrentSelectedPosition);
         getSupportFragmentManager().putFragment(outState, "mCurrentFragment", mCurrentFragment);
 
