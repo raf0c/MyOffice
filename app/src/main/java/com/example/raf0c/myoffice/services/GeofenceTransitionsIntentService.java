@@ -34,11 +34,10 @@ import java.util.List;
 
 
 public class GeofenceTransitionsIntentService extends IntentService {
-    protected static final String TAG = "geofence-transitions-service";
+    protected static final String TAG = "geofence_transitions_service";
 
-    public  boolean exited = false;
-    public  boolean entry = false;
-    public ListView mVisitsListView;
+    private Intent myIntent;
+
 
 
     /**
@@ -56,6 +55,16 @@ public class GeofenceTransitionsIntentService extends IntentService {
 
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        Log.i("LocalService", "Received start id " + startId + ": " + intent);
+        // We want this service to continue running until it is explicitly
+        // stopped, so return sticky.
+        myIntent = intent;
+        onHandleIntent(intent);
+        return START_REDELIVER_INTENT;
+    }
+
 
     /**
      * Handles incoming intents.
@@ -66,6 +75,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+        myIntent = intent;
         GeofencingEvent geofencingEvent = GeofencingEvent.fromIntent(intent);
         if (geofencingEvent.hasError()) {
             String errorMessage = GeofenceErrorMessages.getErrorString(this, geofencingEvent.getErrorCode());
@@ -131,6 +141,12 @@ public class GeofenceTransitionsIntentService extends IntentService {
         }
 
     }
+
+    public void onDestroy() {
+
+        sendBroadcast(myIntent);
+    }
+
 
     /**
      * Gets transition details and returns them as a formatted string.

@@ -3,11 +3,14 @@ package com.example.raf0c.myoffice.fragments;
 import android.annotation.SuppressLint;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -18,8 +21,10 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
@@ -47,10 +52,12 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONObject;
@@ -65,7 +72,7 @@ import java.util.List;
  * Created by raf0c on 25/09/15.
  */
 public class MainFragment extends Fragment
-        implements ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status> {
+        implements ConnectionCallbacks, OnConnectionFailedListener, ResultCallback<Status>, OnMarkerDragListener{
 
     private GoogleMap mMap; // Might be null if Google Play services APK is not available.
     private LinearLayout myLayout;
@@ -76,6 +83,7 @@ public class MainFragment extends Fragment
     public  double mLongitude;
     protected static final String TAG = "creating-and-monitoring-geofences";
     public AutoCompleteTextView autoPlaces;
+    private Marker mMarker;
 
     /**
      * Provides the entry point to Google Play services.
@@ -105,8 +113,12 @@ public class MainFragment extends Fragment
     // Button for removing geofences.
     private Button mRemoveGeofencesButton;
 
-    public  static MyLocationListener myLocationListener;
+    private Button mDragMarkerButton;
 
+    private Button mFinishDraggingButton;
+
+    public  static MyLocationListener myLocationListener;
+    private boolean locationChanged = false;
 
 
     public MainFragment() {
@@ -169,8 +181,12 @@ public class MainFragment extends Fragment
 
         // Gets to GoogleMap from the MapView and does initialization stuff
         mMap = mapView.getMap();
-        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.getUiSettings().setMyLocationButtonEnabled(false);
+        mMap.setMyLocationEnabled(false);
+
         mRemoveGeofencesButton = (Button) myLayout.findViewById(R.id.remove_geofences_button);
+        mDragMarkerButton = (Button) myLayout.findViewById(R.id.drag_marker_button);
+        mFinishDraggingButton = (Button) myLayout.findViewById(R.id.finish_dragging);
 
         mRemoveGeofencesButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -178,6 +194,19 @@ public class MainFragment extends Fragment
                 removeGeofence(v);
             }
         });
+        mDragMarkerButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                handleMarkerManually(v);
+            }
+        });
+        mFinishDraggingButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDialog(v);
+            }
+        });
+
         // Empty list for storing geofences.
         mGeofenceList = new ArrayList<>();
 
@@ -197,6 +226,113 @@ public class MainFragment extends Fragment
 
 
         return  myLayout;
+    }
+
+    private void showDialog(final View v){
+        LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
+
+        View promptView = layoutInflater.inflate(R.layout.layout_dialog, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+
+        // set prompts.xml to be the layout file of the alertdialog builder
+        alertDialogBuilder.setView(promptView);
+
+        final EditText input = (EditText) promptView.findViewById(R.id.userInput);
+
+        // setup a dialog window
+        alertDialogBuilder
+                .setCancelable(false)
+                .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // get user input and set it to result
+                        mCityName = input.getText().toString();
+                        mDragMarkerButton.setVisibility(View.VISIBLE);
+                        mFinishDraggingButton.setVisibility(View.GONE);
+                        mLatitude = mMap.getMyLocation().getLatitude();
+                        mLongitude = mMap.getMyLocation().getLongitude();
+                        Log.e("FinalAddress", mCityName + " -- " + mLatitude + " -- " + mLongitude + " --");
+                        addGeofence(v);
+
+                    }
+                })
+                .setNegativeButton("Cancel",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,	int id) {
+                                dialog.cancel();
+                            }
+                        });
+
+        // create an alert dialog
+        AlertDialog alertD = alertDialogBuilder.create();
+
+        alertD.show();
+
+    }
+
+
+
+    private void handleMarkerManually(View v){
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+        mMap.setMyLocationEnabled(true);
+
+        // Get the button view
+        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        locationButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mMap!=null){
+                    LatLng loc = new LatLng(mMap.getMyLocation().getLatitude(), mMap.getMyLocation().getLongitude());
+                    mMap.clear();
+                    mMarker = mMap.addMarker(new MarkerOptions().position(loc).draggable(true));
+                    if(mMap != null){
+                        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16.0f));
+                    }
+                }else{
+                    Toast.makeText(getActivity(),"The map is not rendered",Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+        //mMap.setOnMyLocationChangeListener(myLocationChangeListener);
+        mFinishDraggingButton.setVisibility(View.VISIBLE);
+    }
+
+    private GoogleMap.OnMyLocationChangeListener myLocationChangeListener = new GoogleMap.OnMyLocationChangeListener() {
+        @Override
+        public void onMyLocationChange(Location location) {
+            LatLng loc = new LatLng(location.getLatitude(), location.getLongitude());
+            mMap.clear();
+            mMarker = mMap.addMarker(new MarkerOptions().position(loc).draggable(true));
+            if(mMap != null){
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 16.0f));
+            }
+        }
+    };
+
+
+/**
+ * Marker listeners methods
+ */
+
+    @Override
+    public void onMarkerDragStart(Marker marker) {
+
+        mLatitude = marker.getPosition().latitude;
+        mLongitude = marker.getPosition().longitude;
+
+    }
+
+    @Override
+    public void onMarkerDrag(Marker marker) {
+        mLatitude = marker.getPosition().latitude;
+        mLongitude = marker.getPosition().longitude;
+    }
+
+    @Override
+    public void onMarkerDragEnd(Marker marker) {
+        mLatitude = marker.getPosition().latitude;
+        mLongitude = marker.getPosition().longitude;
+
     }
 
     private void fetchPlaces(String place) {
@@ -516,6 +652,5 @@ public class MainFragment extends Fragment
             mRemoveGeofencesButton.setEnabled(false);
         }
     }
-
 
 }

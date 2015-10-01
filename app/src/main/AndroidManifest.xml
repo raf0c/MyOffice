@@ -40,6 +40,14 @@
             android:name=".services.GeofenceTransitionsIntentService"
             android:exported="false" >
         </service>
+        <receiver
+            android:name=".broadcast_receivers.ReceiverTrigger"
+            >
+            <intent-filter>
+                <action android:name="geofence_transitions_service" />
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

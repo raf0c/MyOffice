@@ -1,10 +1,14 @@
 <resources>
     <string name="app_name">MyOffice</string>
     <string name="title_activity_main">Map</string>
+    <string name="action_help">Help!</string>
+    <string name="drag_my_position">Drag my position!</string>
+    <string name="finish_drag">Finish dragging!</string>
+    <string name="tvOfficeName">Name your Office!</string>
     <string name="openDrawer">Open navigation drawer</string>
     <string name="closeDrawer">Close navigation drawer</string>
     <string name="places">Enter Office Here</string>
-
+    <string name="tvHelp">If you can\'t find your location, please use "Drag my position!"</string>
     <string name="item_office">Office: </string>
     <string name="item_duration">Duration: </string>
     <string name="item_entry">Entry: </string>

@@ -8,11 +8,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/places"/>
-    <Button
-        android:id="@+id/remove_geofences_button"
-        android:layout_width="match_parent"
+    <TextView
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/remove_geofences" />
+        android:id="@+id/tvHelp"
+        android:text="@string/tvHelp"/>
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/remove_geofences_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/remove_geofences" />
+        <Button
+            android:id="@+id/drag_marker_button"
+            android:layout_alignEnd="@id/remove_geofences_button"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/drag_my_position" />
+        <Button
+            android:id="@+id/finish_dragging"
+            android:layout_alignEnd="@id/remove_geofences_button"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/finish_drag"
+            android:visibility="gone"/>
+    </RelativeLayout>
+
     <com.google.android.gms.maps.MapView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
