@@ -13,7 +13,7 @@ import com.example.raf0c.myoffice.services.GeofenceTransitionsIntentService;
 public class ReceiverTrigger extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.e("Service Stops", "Launch again");
+        Log.i("Service Stops", "Launch again");
         context.startService(intent);
     }
 }

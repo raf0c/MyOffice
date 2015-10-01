@@ -259,6 +259,8 @@ public class MainFragment extends Fragment
                 .setNegativeButton("Cancel",
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,	int id) {
+                                mDragMarkerButton.setVisibility(View.VISIBLE);
+                                mFinishDraggingButton.setVisibility(View.GONE);
                                 dialog.cancel();
                             }
                         });
