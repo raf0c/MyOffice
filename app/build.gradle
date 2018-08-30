@@ -1,13 +1,17 @@
+plugins {
+    id "org.sonarqube" version "2.6"
+}
+
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 22
-    buildToolsVersion "23.0.0 rc2"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.0"
 
     defaultConfig {
         applicationId "com.example.raf0c.myoffice"
         minSdkVersion 19
-        targetSdkVersion 22
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
     }
@@ -20,8 +24,18 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:22.2.0'
-    compile 'com.google.android.gms:play-services:7.5.0'
-    compile 'com.mcxiaoke.volley:library:1.0.19'
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:28.0.0-rc02'
+    implementation 'com.google.android.gms:play-services-maps:15.0.1'
+    implementation 'com.google.android.gms:play-services-location:15.0.1'
+    implementation 'com.mcxiaoke.volley:library:1.0.19'
+}
+
+sonarqube {
+    properties {
+        property "sonar.projectKey", "com.example.raf0c.myoffice:Main"
+        property "sonar.projectName", "MyOffice"
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.login", "bfb8f2f144d1cebb9a1b7a7a53c129c2caac7d0b"
+    }
 }

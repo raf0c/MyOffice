@@ -54,6 +54,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMap.OnMarkerDragListener;
 import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
@@ -180,9 +181,15 @@ public class MainFragment extends Fragment
         });
 
         // Gets to GoogleMap from the MapView and does initialization stuff
-        mMap = mapView.getMap();
-        mMap.getUiSettings().setMyLocationButtonEnabled(false);
-        mMap.setMyLocationEnabled(false);
+        mapView.getMapAsync(new OnMapReadyCallback() {
+            @Override
+            public void onMapReady(GoogleMap googleMap) {
+                mMap = googleMap;
+                mMap.getUiSettings().setMyLocationButtonEnabled(false);
+
+            }
+        });
+        //mMap.setMyLocationEnabled(false);
 
         mRemoveGeofencesButton = (Button) myLayout.findViewById(R.id.remove_geofences_button);
         mDragMarkerButton = (Button) myLayout.findViewById(R.id.drag_marker_button);
@@ -276,7 +283,7 @@ public class MainFragment extends Fragment
 
     private void handleMarkerManually(View v){
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
-        mMap.setMyLocationEnabled(true);
+        //mMap.setMyLocationEnabled(true);
 
         // Get the button view
         View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
